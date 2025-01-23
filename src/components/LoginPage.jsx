@@ -1,31 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import { useMsal } from '@azure/msal-react';
-import { getLoginRequest } from '../authConfig';
+import { loginRequest, msalConfig } from '../authConfig';
 import '../styles/login.css';
+import { PublicClientApplication } from '@azure/msal-browser';
 
 export const LoginPage = () => {
-    const { instance } = useMsal();
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const [credentials, setCredentials] = useState([]);
+
+    useEffect(() => {
+        const fetchCredentials = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/get-microsoft-credentials');
+                const data = await response.json();
+                setCredentials(data.data);
+            } catch (error) {
+                console.error('Error fetching credentials:', error);
+            }
+        };
+        fetchCredentials();
+    }, []);
 
     const isValidEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
 
-    const shouldShowPassword = !(isValidEmail(email) && email.includes('@shailesh312rejoicegmail.onmicrosoft.com'));
+    const shouldShowPassword = !(isValidEmail(email) && credentials.some(cred => email.includes(cred.email)));
 
     const handleLogin = async () => {
         setIsLoading(true);
+        const current = credentials.find(cred => email.includes(cred.email));
+        console.log(current);
+
         try {
-            await instance.loginRedirect(getLoginRequest(email));
+            const dynamicMsalConfig = {
+                ...msalConfig,
+                auth: {
+                    clientId: current.clientId,
+                    authority: current.authority,
+                    redirectUri: msalConfig.auth.redirectUri,
+                    postLogoutRedirectUri: msalConfig.auth.postLogoutRedirectUri,
+                }
+            };
+            const dynamicInstance = new PublicClientApplication(dynamicMsalConfig);
+            await dynamicInstance.loginRedirect(loginRequest);
         } catch (e) {
             console.log(e);
         } finally {
             setIsLoading(false);
         }
-    }
+    };
 
     const handleSubmit = () => {
         if (isValidEmail(email)) {
@@ -40,9 +68,9 @@ export const LoginPage = () => {
                 <p className="login-message">Please sign in to continue</p>
                 <div>
                     {!shouldShowPassword && (
-                        <div 
+                        <div
                             className="single-sign-in-button mb-3"
-                            style={{ 
+                            style={{
                                 backgroundColor: '#f8f9fa',
                                 padding: '10px',
                                 borderRadius: '4px',

@@ -14,7 +14,7 @@ export const LoginPage = () => {
     useEffect(() => {
         const fetchCredentials = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/get-microsoft-credentials');
+                const response = await fetch('https://backend-apis-six.vercel.app/api/get-microsoft-credentials');
                 const data = await response.json();
                 setCredentials(data.data);
             } catch (error) {

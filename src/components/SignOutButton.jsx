@@ -13,7 +13,6 @@ export const SignOutButton = () => {
             postLogoutRedirectUri: "/",
         });
     }
-
     
     return (
         <Button variant="secondary" onClick={() => handleLogout()} className="ml-auto" drop="start" title="Sign Out">

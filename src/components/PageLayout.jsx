@@ -16,15 +16,15 @@ import { SignOutButton } from './SignOutButton';
 export const PageLayout = (props) => {
     const isAuthenticated = useIsAuthenticated();
 
+    console.log(isAuthenticated);
+    
     return (
         <>
             <Navbar bg="primary" variant="dark" className="navbarStyle">
                 <a className="navbar-brand" href="/">
                     Microsoft Identity Platform
                 </a>
-                <div className="collapse navbar-collapse justify-content-end">
-                    {isAuthenticated && <SignOutButton />}
-                </div>
+                {isAuthenticated && <SignOutButton />}
             </Navbar>
             {props.children}
         </>

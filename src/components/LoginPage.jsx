@@ -34,7 +34,7 @@ export const LoginPage = () => {
     const handleLogin = async () => {
         setIsLoading(true);
         const current = credentials.find(cred => email.includes(cred.email));
-        console.log(current);
+        localStorage.setItem("auth",JSON.stringify(current));
 
         try {
             const dynamicMsalConfig = {

@@ -10,12 +10,14 @@ import { LogLevel } from "@azure/msal-browser";
  * For a full list of MSAL.js configuration parameters, visit:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md 
  */
+
+const credentials = JSON.parse(localStorage.getItem("auth") || "{}");
 export const msalConfig = {
     auth: {
-        clientId: "9151c0d5-07d8-4b63-9636-8fb08417e666",
-        authority: "https://login.microsoftonline.com/7e5f3926-3cba-4896-9658-d6f907769a67",
-        redirectUri: "http://localhost:3000/",
-        postLogoutRedirectUri: "http://localhost:3000",
+        clientId: credentials.clientId ? credentials.clientId : "9151c0d5-07d8-4b63-9636-8fb08417e666",
+        authority: credentials.authority ? credentials.authority : "https://login.microsoftonline.com/7e5f3926-3cba-4896-9658-d6f907769a67",
+        redirectUri: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
